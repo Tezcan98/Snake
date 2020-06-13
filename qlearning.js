@@ -127,7 +127,6 @@ function train(){
 }
 
 
-
 anychart.onDocumentReady(function () {
 
   // data

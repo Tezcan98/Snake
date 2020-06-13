@@ -200,9 +200,19 @@ function gameLoop()
 
 }
 
-var oyun=setInterval(gameLoop, 100);
+var oyun=setInterval(gameLoop, 1000);
+var speed=1;
 
+function hız() {
+  var btn = document.getElementById("hizbtn");
+  clearInterval(oyun);
+  speed*=10;
+  speed=speed%99999;
+  oyun=setInterval(gameLoop, 1000/speed);
+  console.log(1000/speed);
 
+  btn.innerHTML = 'Hız Ayarı X'+speed;
+}
 
 /*
 switch (p) {
