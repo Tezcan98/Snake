@@ -1,7 +1,7 @@
 var H=Uzunluk/40;
 var W=Genislik/40;
 var Qtable = [];
-for (let i = 0; i < W*H; i++) {
+for (let i = 0; i < W*H; i++) {  // Yılan,yem ve aksiyonu tutan q tablosu oluşturulur ve 0 ile ilklendirilir.
   Qtable[i] = [];
   for (let j = 0; j < W*H; j++) {
     Qtable[i][j] = [];
@@ -14,7 +14,10 @@ var toplamodul=0;
 var epsilon=0.7;
 var ogrenme=0.7;
 
-function getRandom(Yon){
+function manhattan_distance(a,b){ 
+    return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])
+  }
+function getRandom(Yon){ //Rastgele hareke oluşturucu fonksiyon, olduğu yönün tersine gidemeyecek şekilde ayarlanmış
   let Randomarray;
   switch (Yon) {  //olduğu yönün aksine gidemez
     case 1:
@@ -38,7 +41,7 @@ function getMax(mdizi)
     let max=0;
     let ind=-1;
     let ters;
-    if (Yon<3)  //yılan tersine gidemez // 1 ve 2 ise +2 yani 4; 3,4 ise -1 yani 1 ve 2
+    if (Yon<3)  //yılan tersine gidemez // 1 ve 2 ise +2 yani 4; 3,4 ise -2 yani 1 ve 2
       ters=Yon+2;
     else
       ters=Yon-2;
@@ -49,30 +52,22 @@ function getMax(mdizi)
           max=mdizi[i];
           flag=true;
         }
-    if (ind==-1){ // for içindeki sorguda hiç true olmamışsa, -Yani max olan yer yılanın tersiyse- || -hepsi 0 ise-
-      return getRandom(Yon);
-      //return 3; // hiç girmemişse 1 yönündedir 1 yerine 2 fazlası
+    if (ind==-1){ // for içindeki sorguda hiç true olmamışsa, -Yani max olan yer, yılanın tersiyse- ya da -hepsi 0 ise- random değer üretilir.
+      return getRandom(Yon); 
     }
-    return ind; // dizi 0 ve 3 arası ama yön 1 ve 4
+    return ind;  
 }
-
-function getPathWithAstar(){
-
-
-}
-
+ 
 function train(){
-  S=(yılan.heady/40*W)+(yılan.headx/40);
-  Y=yemY*W+yemX;
+  S=(yılan.heady/40*W)+(yılan.headx/40); // 2 boyuttan 1 boyuta çeviri
+  Y=yemY*W+yemX;  // 2 boyuttan 1 boyuta çeviri
   Sx=yılan.headx/40;
   Sy=yılan.heady/40;
   rand=Math.random();
-  if (rand<epsilon)
+  if (rand<epsilon) // rastgele üretilen değer epsilondan küçükse hafızasındaki en iyi yere gider
     action=getMax(Qtable[S][Y]);
-  else{
+  else{  // aksi durumda rastgele gider, böylelikle bazen küçük keşifler yapar
     action=getRandom(Yon);
-
-
   }
   Yon=action;
 
@@ -99,20 +94,20 @@ function train(){
   }
   let ceza=false;
   let reward=0;
-  if ((Sx==yemX) && (Sy==yemY)){
+  if ((Sx==yemX) && (Sy==yemY)){ //yemi yediyse ödül alır
     reward=10;
   }
   else
-    if((Sx>W-2) || (Sy>H-2) || (Sx<1) || (Sy<1)){
+    if((Sx>W-2) || (Sy>H-2) || (Sx<1) || (Sy<1)){ //duvara çarparsa ceza
       ceza=true;
     }
     else
       for(let i=1;i<yılan.kuyruk.length-1;i++)
         if(yılan.headx==yılan.kuyruk[i][0] && yılan.heady==yılan.kuyruk[i][1])
         {
-          ceza=true;
+          ceza=true; //kuyruğa çarparsa ceza
         }
-  if(ceza){
+  if(ceza){ //ceza almışsa reward değişkenini güncelle
     reward=-10;
     ceza=false;
   }
@@ -121,7 +116,7 @@ function train(){
     reward=10*(manhattan_distance([oldSx,oldSy],[yemX,yemY]) > manhattan_distance([Sx,Sy],[yemX,yemY])) //yeni mesafe daha az ise yakınlaşmıştır, 10 puan alır
 
   toplamodul+=reward;
-  Qtable[oldS][Y][action]=reward+ogrenme*getMax(Qtable[S][Y]);
+  Qtable[oldS][Y][action]=reward+ogrenme*getMax(Qtable[S][Y]); //Q tablosu alınan ödül ve gidilen yerdeki maksimum değere göre güncellenir.
 
 
 }
@@ -154,7 +149,7 @@ function addPoint() {
   data.append({
 
     // x value
-    x: "new P" + newIndex,
+    x: "iter" + newIndex,
     // random value from 1 to 100
     value : grafik[grafik.length-1]
   });
